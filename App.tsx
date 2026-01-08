@@ -29,11 +29,21 @@ const App: React.FC = () => {
     setRefreshTrigger(prev => prev + 1);
   };
 
+  /* Ref to access currentView inside callbacks without triggering re-renders */
+  const currentViewRef = React.useRef(currentView);
+
   useEffect(() => {
-    // Check active sessions and sets the user
+    currentViewRef.current = currentView;
+  }, [currentView]);
+
+  useEffect(() => {
+    // Check active sessions on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        setCurrentView(AppView.DASHBOARD);
+        // Only redirect to dashboard if we are currently at login
+        if (currentViewRef.current === AppView.LOGIN) {
+          setCurrentView(AppView.DASHBOARD);
+        }
       }
       setLoading(false);
     }).catch((error) => {
@@ -41,20 +51,20 @@ const App: React.FC = () => {
       setLoading(false);
     });
 
-    // Listen for changes on auth state (logged in, signed out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
+    // Listen for changes on auth state
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
         setCurrentView(AppView.DASHBOARD);
-      } else {
-        // If logged out and not on a public page, go to login
-        if (currentView !== AppView.TERMS && currentView !== AppView.PRIVACY && currentView !== AppView.HELP) {
+      } else if (event === 'SIGNED_OUT') {
+        const view = currentViewRef.current;
+        if (view !== AppView.TERMS && view !== AppView.PRIVACY && view !== AppView.HELP) {
           setCurrentView(AppView.LOGIN);
         }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [currentView]); // Added currentView to dependency array
+  }, []); // Run only once on mount
 
   const navigate = useCallback((view: AppView) => {
     setCurrentView(view);
