@@ -19,6 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isOpen, onCl
     { id: AppView.FINANCIAL, label: 'Financeiro', icon: 'payments' },
     { id: AppView.REPORTS, label: 'Relatórios', icon: 'bar_chart' },
     { id: AppView.COMMUNICATION, label: 'Comunicação', icon: 'chat' },
+    { id: AppView.MARKETING, label: 'Marketing', icon: 'campaign' },
   ];
 
   return (

@@ -7,7 +7,11 @@ import TransactionList from './financial/TransactionList';
 import NewTransactionModal from './financial/NewTransactionModal';
 import FinancialIntelligence from './financial/FinancialIntelligence';
 
-const Financial: React.FC = () => {
+interface FinancialProps {
+    onOpenCampaign?: () => void;
+}
+
+const Financial: React.FC<FinancialProps> = ({ onOpenCampaign }) => {
     const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'intelligence'>('overview');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -85,7 +89,7 @@ const Financial: React.FC = () => {
 
             {activeTab === 'intelligence' && (
                 <div className="animate-fade-in">
-                    <FinancialIntelligence />
+                    <FinancialIntelligence onOpenCampaign={onOpenCampaign} />
                 </div>
             )}
 

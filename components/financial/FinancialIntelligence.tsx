@@ -20,7 +20,11 @@ const plansData = [
 
 const COLORS = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444'];
 
-const FinancialIntelligence: React.FC = () => {
+interface FinancialIntelligenceProps {
+    onOpenCampaign?: () => void;
+}
+
+const FinancialIntelligence: React.FC<FinancialIntelligenceProps> = ({ onOpenCampaign }) => {
     return (
         <div className="space-y-6">
             {/* Top Stats - The "Wow" Factor */}
@@ -157,7 +161,10 @@ const FinancialIntelligence: React.FC = () => {
                             Seu plano <strong>"Trimestral"</strong> tem a maior taxa de renovação (80%), mas representa apenas 25% da receita.
                             Considere criar uma campanha de migração do "Mensal" para o "Trimestral" oferecendo 5% de desconto. Isso pode aumentar sua previsão de caixa em <strong>R$ 15.000</strong> no próximo trimestre.
                         </p>
-                        <button className="mt-4 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold rounded-lg text-xs uppercase tracking-wide transition-colors">
+                        <button
+                            onClick={onOpenCampaign}
+                            className="mt-4 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold rounded-lg text-xs uppercase tracking-wide transition-colors"
+                        >
                             Criar Campanha
                         </button>
                     </div>

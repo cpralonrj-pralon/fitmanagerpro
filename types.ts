@@ -8,6 +8,7 @@ export enum AppView {
   FINANCIAL = 'financial',
   REPORTS = 'reports',
   COMMUNICATION = 'communication',
+  MARKETING = 'marketing',
   TERMS = 'terms',
   PRIVACY = 'privacy',
   HELP = 'help',

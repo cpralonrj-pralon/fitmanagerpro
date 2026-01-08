@@ -13,6 +13,7 @@ import Financial from './components/Financial';
 import Reports from './components/Reports';
 import Communication from './components/Communication';
 import StudentModal from './components/StudentModal';
+import Marketing from './components/Marketing';
 
 import Terms from './components/Terms';
 import Privacy from './components/Privacy';
@@ -32,6 +33,14 @@ const App: React.FC = () => {
 
   /* Ref to access currentView inside callbacks without triggering re-renders */
   const currentViewRef = React.useRef(currentView);
+
+  // Marketing Navigation State
+  const [marketingView, setMarketingView] = useState<'dashboard' | 'builder'>('dashboard');
+
+  const handleOpenCampaign = useCallback(() => {
+    setMarketingView('builder');
+    setCurrentView(AppView.MARKETING);
+  }, []);
 
   useEffect(() => {
     currentViewRef.current = currentView;
@@ -68,6 +77,10 @@ const App: React.FC = () => {
   }, []); // Run only once on mount
 
   const navigate = useCallback((view: AppView) => {
+    // Reset marketing view when navigating away or to marketing root
+    if (view === AppView.MARKETING) {
+      setMarketingView('dashboard');
+    }
     setCurrentView(view);
     setSidebarOpen(false);
   }, []);
@@ -124,9 +137,18 @@ const App: React.FC = () => {
             )}
             {currentView === AppView.PROFILE && <StudentProfile onBack={() => navigate(AppView.STUDENTS)} />}
             {currentView === AppView.SCHEDULE && <Schedule />}
-            {currentView === AppView.FINANCIAL && <Financial />}
+            {/* Pass handleOpenCampaign to Financial */}
+            {currentView === AppView.FINANCIAL && <Financial onOpenCampaign={handleOpenCampaign} />}
             {currentView === AppView.REPORTS && <Reports />}
             {currentView === AppView.COMMUNICATION && <Communication />}
+            {/* Pass controlled state to Marketing */}
+            {currentView === AppView.MARKETING && (
+              <Marketing
+                onNavigate={navigate}
+                currentView={marketingView}
+                onChangeView={setMarketingView}
+              />
+            )}
             {currentView === AppView.SETTINGS && <Settings />}
           </div>
         </main>
