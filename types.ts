@@ -7,7 +7,10 @@ export enum AppView {
   SCHEDULE = 'schedule',
   FINANCIAL = 'financial',
   REPORTS = 'reports',
-  COMMUNICATION = 'communication'
+  COMMUNICATION = 'communication',
+  TERMS = 'terms',
+  PRIVACY = 'privacy',
+  HELP = 'help'
 }
 
 export interface Student {

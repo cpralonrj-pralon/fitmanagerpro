@@ -1,12 +1,14 @@
 
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
+import { AppView } from '../types';
 
 interface LoginProps {
   onLogin: () => void;
+  onNavigate: (view: AppView) => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const Login: React.FC<LoginProps> = ({ onLogin, onNavigate }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [gymName, setGymName] = useState('');
@@ -261,11 +263,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             )}
 
             <div className="mt-8 flex justify-center gap-6 text-[10px] font-black uppercase tracking-widest text-text-sub/50">
-              <a href="#" className="hover:text-primary transition-colors">Termos</a>
+              <button onClick={() => onNavigate(AppView.TERMS)} className="hover:text-primary transition-colors">Termos</button>
               <span>•</span>
-              <a href="#" className="hover:text-primary transition-colors">Privacidade</a>
+              <button onClick={() => onNavigate(AppView.PRIVACY)} className="hover:text-primary transition-colors">Privacidade</button>
               <span>•</span>
-              <a href="#" className="hover:text-primary transition-colors">Ajuda</a>
+              <button onClick={() => onNavigate(AppView.HELP)} className="hover:text-primary transition-colors">Ajuda</button>
             </div>
           </div>
         </div>

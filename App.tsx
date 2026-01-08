@@ -14,6 +14,10 @@ import Reports from './components/Reports';
 import Communication from './components/Communication';
 import StudentModal from './components/StudentModal';
 
+import Terms from './components/Terms';
+import Privacy from './components/Privacy';
+import Help from './components/Help';
+
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.LOGIN);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -42,12 +46,15 @@ const App: React.FC = () => {
       if (session) {
         setCurrentView(AppView.DASHBOARD);
       } else {
-        setCurrentView(AppView.LOGIN);
+        // If logged out and not on a public page, go to login
+        if (currentView !== AppView.TERMS && currentView !== AppView.PRIVACY && currentView !== AppView.HELP) {
+          setCurrentView(AppView.LOGIN);
+        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [currentView]); // Added currentView to dependency array
 
   const navigate = useCallback((view: AppView) => {
     setCurrentView(view);
@@ -62,8 +69,19 @@ const App: React.FC = () => {
     );
   }
 
+  // Handle public pages (no auth needed)
+  if (currentView === AppView.TERMS) {
+    return <Terms onBack={() => navigate(AppView.LOGIN)} />;
+  }
+  if (currentView === AppView.PRIVACY) {
+    return <Privacy onBack={() => navigate(AppView.LOGIN)} />;
+  }
+  if (currentView === AppView.HELP) {
+    return <Help onBack={() => navigate(AppView.LOGIN)} />;
+  }
+
   if (currentView === AppView.LOGIN) {
-    return <Login onLogin={() => navigate(AppView.DASHBOARD)} />;
+    return <Login onLogin={() => navigate(AppView.DASHBOARD)} onNavigate={navigate} />;
   }
 
   return (
