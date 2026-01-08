@@ -219,11 +219,23 @@ const Header: React.FC<HeaderProps> = ({ currentView, onMenuClick, onNavigate })
             {/* Profile Menu */}
             {showProfileMenu && (
               <div className="absolute top-14 right-0 w-48 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden z-40 py-2">
-                <button className="w-full px-4 py-2 text-left text-sm font-medium text-text-main hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    onNavigate(AppView.SETTINGS);
+                    setShowProfileMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm font-medium text-text-main hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
+                >
                   <span className="material-symbols-outlined text-[18px]">person</span>
                   Meu Perfil
                 </button>
-                <button className="w-full px-4 py-2 text-left text-sm font-medium text-text-main hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    onNavigate(AppView.SETTINGS);
+                    setShowProfileMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm font-medium text-text-main hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
+                >
                   <span className="material-symbols-outlined text-[18px]">settings</span>
                   Configurações
                 </button>
