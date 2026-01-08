@@ -10,7 +10,8 @@ export enum AppView {
   COMMUNICATION = 'communication',
   TERMS = 'terms',
   PRIVACY = 'privacy',
-  HELP = 'help'
+  HELP = 'help',
+  SETTINGS = 'settings'
 }
 
 export interface Student {

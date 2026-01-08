@@ -17,6 +17,7 @@ import StudentModal from './components/StudentModal';
 import Terms from './components/Terms';
 import Privacy from './components/Privacy';
 import Help from './components/Help';
+import Settings from './components/Settings';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.LOGIN);
@@ -109,6 +110,7 @@ const App: React.FC = () => {
         <Header
           currentView={currentView}
           onMenuClick={() => setSidebarOpen(true)}
+          onNavigate={navigate}
         />
 
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8">
@@ -125,6 +127,7 @@ const App: React.FC = () => {
             {currentView === AppView.FINANCIAL && <Financial />}
             {currentView === AppView.REPORTS && <Reports />}
             {currentView === AppView.COMMUNICATION && <Communication />}
+            {currentView === AppView.SETTINGS && <Settings />}
           </div>
         </main>
       </div>
