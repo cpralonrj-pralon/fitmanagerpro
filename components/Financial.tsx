@@ -5,9 +5,10 @@ import FinancialSummaryCards from './financial/FinancialSummaryCards';
 import FinancialCharts from './financial/FinancialCharts';
 import TransactionList from './financial/TransactionList';
 import NewTransactionModal from './financial/NewTransactionModal';
+import FinancialIntelligence from './financial/FinancialIntelligence';
 
 const Financial: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'overview' | 'transactions'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'intelligence'>('overview');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Mock Data for UI demonstration - Replace with Supabase queries after schema update
@@ -32,7 +33,7 @@ const Financial: React.FC = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-black tracking-tight text-text-main dark:text-white">Gestão Financeira</h2>
-                    <p className="text-text-sub text-sm font-medium mt-1">Acompanhe o fluxo de caixa e saúde do seu negócio</p>
+                    <p className="text-text-sub text-sm font-medium mt-1">Acompanhe o fluxo de caixa, inteligência e saúde do negócio</p>
                 </div>
                 <div className="flex gap-3">
                     <div className="bg-white dark:bg-surface-dark p-1 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 flex">
@@ -48,6 +49,13 @@ const Financial: React.FC = () => {
                         >
                             Transações
                         </button>
+                        <button
+                            onClick={() => setActiveTab('intelligence')}
+                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${activeTab === 'intelligence' ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'text-text-sub hover:bg-gray-50 dark:hover:bg-white/5'}`}
+                        >
+                            <span className="material-symbols-outlined text-[14px]">auto_awesome</span>
+                            Inteligência
+                        </button>
                     </div>
                     <button
                         onClick={() => setIsModalOpen(true)}
@@ -59,7 +67,7 @@ const Financial: React.FC = () => {
                 </div>
             </div>
 
-            {activeTab === 'overview' ? (
+            {activeTab === 'overview' && (
                 <div className="space-y-6 animate-fade-in">
                     <FinancialSummaryCards stats={summaryStats} />
                     <FinancialCharts />
@@ -67,9 +75,17 @@ const Financial: React.FC = () => {
                         <TransactionList transactions={transactions} />
                     </div>
                 </div>
-            ) : (
+            )}
+
+            {activeTab === 'transactions' && (
                 <div className="h-[600px] animate-fade-in">
                     <TransactionList transactions={transactions} />
+                </div>
+            )}
+
+            {activeTab === 'intelligence' && (
+                <div className="animate-fade-in">
+                    <FinancialIntelligence />
                 </div>
             )}
 
