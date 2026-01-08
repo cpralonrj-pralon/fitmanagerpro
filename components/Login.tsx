@@ -11,6 +11,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [gymName, setGymName] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,17 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setSuccess(null);
 
     try {
-      if (isRegistering) {
+      if (isResettingPassword) {
+        if (!email) throw new Error('Por favor, informe seu e-mail.');
+
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin,
+        });
+
+        if (resetError) throw resetError;
+
+        setSuccess('Link de redefinição enviado! Verifique seu e-mail.');
+      } else if (isRegistering) {
         const { data, error: authError } = await supabase.auth.signUp({
           email,
           password,
@@ -107,12 +118,16 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <div className="w-full max-w-sm mx-auto">
             <div className="mb-12">
               <h2 className="text-3xl font-black text-text-main dark:text-white mb-3 tracking-tight">
-                {isRegistering ? 'Crie sua conta' : 'Bem-vindo de volta!'}
+                {isResettingPassword
+                  ? 'Redefinir Senha'
+                  : (isRegistering ? 'Crie sua conta' : 'Bem-vindo de volta!')}
               </h2>
               <p className="text-text-sub dark:text-gray-400 font-medium">
-                {isRegistering
-                  ? 'Comece a gerenciar sua academia de forma inteligente hoje.'
-                  : 'Insira suas credenciais para acessar o painel.'}
+                {isResettingPassword
+                  ? 'Informe seu e-mail para receber o link de redefinição.'
+                  : (isRegistering
+                    ? 'Comece a gerenciar sua academia de forma inteligente hoje.'
+                    : 'Insira suas credenciais para acessar o painel.')}
               </p>
             </div>
 
@@ -131,7 +146,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 </div>
               )}
 
-              {isRegistering && (
+              {isRegistering && !isResettingPassword && (
                 <div className="space-y-2">
                   <label className="text-xs font-black uppercase tracking-widest text-text-main dark:text-gray-200">Nome da Academia</label>
                   <div className="relative group">
@@ -163,53 +178,87 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-black uppercase tracking-widest text-text-main dark:text-gray-200">Senha</label>
-                  <button type="button" className="text-xs font-black text-primary uppercase hover:underline">Esqueceu?</button>
+              {!isResettingPassword && (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-black uppercase tracking-widest text-text-main dark:text-gray-200">Senha</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsResettingPassword(true);
+                        setError(null);
+                        setSuccess(null);
+                      }}
+                      className="text-xs font-black text-primary uppercase hover:underline"
+                    >
+                      Esqueceu?
+                    </button>
+                  </div>
+                  <div className="relative group">
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-sub group-focus-within:text-primary transition-colors">lock</span>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="w-full h-14 pl-12 pr-12 bg-background-light dark:bg-background-dark border-transparent rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-bold"
+                      placeholder="Sua senha secreta"
+                    />
+                    <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-text-sub hover:text-text-main">
+                      <span className="material-symbols-outlined">visibility</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="relative group">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-sub group-focus-within:text-primary transition-colors">lock</span>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="w-full h-14 pl-12 pr-12 bg-background-light dark:bg-background-dark border-transparent rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-bold"
-                    placeholder="Sua senha secreta"
-                  />
-                  <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-text-sub hover:text-text-main">
-                    <span className="material-symbols-outlined">visibility</span>
-                  </button>
-                </div>
-              </div>
+              )}
 
               <button
                 type="submit"
                 disabled={loading}
                 className={`w-full h-14 bg-primary hover:bg-primary-dark text-background-dark font-black rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 group mt-4 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                <span>{loading ? 'Processando...' : (isRegistering ? 'Criar Conta' : 'Entrar no Sistema')}</span>
+                <span>
+                  {loading
+                    ? 'Processando...'
+                    : (isResettingPassword
+                      ? 'Enviar Link'
+                      : (isRegistering ? 'Criar Conta' : 'Entrar no Sistema'))}
+                </span>
                 {!loading && <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>}
               </button>
-            </form>
 
-            <div className="mt-12 text-center pt-8 border-t border-gray-100 dark:border-gray-800">
-              <p className="text-text-sub text-sm font-medium">
-                {isRegistering ? 'Já tem uma conta?' : 'Ainda não tem conta?'}
+              {isResettingPassword && (
                 <button
                   type="button"
                   onClick={() => {
-                    setIsRegistering(!isRegistering);
+                    setIsResettingPassword(false);
                     setError(null);
                     setSuccess(null);
                   }}
-                  className="text-primary font-black hover:underline ml-1"
+                  className="w-full mt-2 text-sm font-bold text-text-sub hover:text-text-main transition-colors"
                 >
-                  {isRegistering ? 'Fazer login' : 'Cadastrar academia'}
+                  Voltar para o Login
                 </button>
-              </p>
-            </div>
+              )}
+            </form>
+
+            {!isResettingPassword && (
+              <div className="mt-12 text-center pt-8 border-t border-gray-100 dark:border-gray-800">
+                <p className="text-text-sub text-sm font-medium">
+                  {isRegistering ? 'Já tem uma conta?' : 'Ainda não tem conta?'}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsRegistering(!isRegistering);
+                      setError(null);
+                      setSuccess(null);
+                    }}
+                    className="text-primary font-black hover:underline ml-1"
+                  >
+                    {isRegistering ? 'Fazer login' : 'Cadastrar academia'}
+                  </button>
+                </p>
+              </div>
+            )}
 
             <div className="mt-8 flex justify-center gap-6 text-[10px] font-black uppercase tracking-widest text-text-sub/50">
               <a href="#" className="hover:text-primary transition-colors">Termos</a>
